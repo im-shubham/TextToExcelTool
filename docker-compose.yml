@@ -1,0 +1,54 @@
+# Production deployment: Caddy (automatic HTTPS) -> Next.js -> FastAPI -> master workbook on a persistent volume.
+#
+# First run:
+#   1. Put the original workbook at ./seed/GOKUL 26-27.xlsx (never commit it).
+#   2. Set SITE_ADDRESS in .env to your domain (e.g. activity.example.com) whose DNS points at this server.
+#   3. docker compose up -d --build
+# The workbook is copied into the "master-data" volume once; afterwards that copy is the master and
+# ./seed is no longer used. Redeploys and restarts keep the volume.
+
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /data
+      MASTER_WORKBOOK_NAME: "GOKUL 26-27.xlsx"
+      SEED_WORKBOOK_PATH: "/seed/GOKUL 26-27.xlsx"
+    volumes:
+      - master-data:/data
+      - ./seed:/seed:ro
+    # Not published: only reachable by the frontend on the internal network.
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://backend:8000
+    restart: unless-stopped
+    depends_on:
+      - backend
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  master-data:
+  caddy-data:
+  caddy-config:
