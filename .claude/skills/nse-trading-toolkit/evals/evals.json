@@ -1,0 +1,23 @@
+{
+  "skill_name": "nse-trading-toolkit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Analyze BBTC. I hold 1128 shares at avg Rs.1898. What should I do?",
+      "expected_output": "Full analysis with current technicals, scenarios, and a concrete action plan with position sizing and stop-loss levels",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I want to buy RELIANCE. My account is Rs.5 lakhs. Position size for a swing trade?",
+      "expected_output": "Position sizing calculation using fixed fractional method, ATR-based stop, R:R ratio, and entry/exit plan",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Check RSI divergence on TATAMOTORS daily chart. Any setup?",
+      "expected_output": "RSI divergence analysis with multi-timeframe context, entry trigger, stop-loss, and Fibonacci targets",
+      "files": []
+    }
+  ]
+}
